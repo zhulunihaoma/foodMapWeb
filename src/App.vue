@@ -1,30 +1,57 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+     <div id="mapContainer" style="width: 100%; height: 600px"></div>
 </template>
+<script setup lang="ts">
+import AMapLoader from '@amap/amap-jsapi-loader';
+import { shallowRef, onMounted } from 'vue';
+const map = shallowRef(null);
+onMounted(() => {
+  window._AMapSecurityConfig = {
+    securityJsCode: 'b93f8466e3cbf4b982065dc394eff857'
+  };
+  initMap();
+});
+const initMap = ()=>{
+  AMapLoader.load({ 
+    key: '1ab83a26a29e05812d5fb5e347fb279a',
+    version: '2.0',  // 推荐 2.0 版本 
+    plugins: ['AMap.Scale', 'AMap.ToolBar'],
+    Loca:{
+      version:"2.0.0"
+    }
+  }).then((AMap) => {
+    map.value  = new AMap.Map('mapContainer', {
+      zoom: 11,
+      center: [113.664206, 34.737714],
+      viewMode: '3D'
+    });
+    // const marker = new AMap.Marker({
+    //   position: [113.664206, 34.737714],
+    //   icon: new AMap.Icon({
+    //   size: new AMap.Size(40, 50),
+    //   image: './assets/location.png' 
+    //   })
+    // });
+    // map.value.add(marker); 
 
+    // 批量添加标记（需遍历坐标数组）
+    // const markers = devices.map(device  => 
+    // new AMap.Marker({ position: [device.lng, device.lat]  })
+    // );
+    // map.value.add(markers); 
+    // map.value.setFitView();  // 自适
+  }).catch(e => console.error(e)); 
+}
+</script>
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+#mapContainer{
+  width: 100%;
+  height: 950px;
+  position: absolute;
+  top: 0;
+  left: 0;
+
 }
 </style>
