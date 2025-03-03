@@ -1,11 +1,12 @@
 
 <template>
-     <div id="mapContainer" style="width: 100%; height: 600px"></div>
+     <div id="mapContainer"></div>
 </template>
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader';
-import { shallowRef, onMounted } from 'vue';
-const map = shallowRef(null);
+import { shallowRef, onMounted, ref } from 'vue';
+const map = ref(null);
+const currentPosition = ref({});
 onMounted(() => {
   window._AMapSecurityConfig = {
     securityJsCode: 'b93f8466e3cbf4b982065dc394eff857'
@@ -16,7 +17,7 @@ const initMap = ()=>{
   AMapLoader.load({ 
     key: '1ab83a26a29e05812d5fb5e347fb279a',
     version: '2.0',  // 推荐 2.0 版本 
-    plugins: ['AMap.Scale', 'AMap.ToolBar'],
+    plugins: ['AMap.Scale', 'AMap.ToolBar','AMap.Geolocation'],
     Loca:{
       version:"2.0.0"
     }
@@ -24,8 +25,44 @@ const initMap = ()=>{
     map.value  = new AMap.Map('mapContainer', {
       zoom: 11,
       center: [113.664206, 34.737714],
-      viewMode: '3D'
+      viewMode: '3D',
+      resizeEnable: true // 自适应窗口 
     });
+      // 初始化定位插件 
+    const geolocation = new AMap.Geolocation({
+      enableHighAccuracy: true, // 高精度定位 
+      timeout: 10000, // 超时时间 
+      buttonPosition: 'RB' // 定位按钮位置（右下）
+    });
+ 
+    map.value.addControl(geolocation); 
+    // 定位成功回调 
+    geolocation.getCurrentPosition((status,  result) => {
+      if (status === 'complete') {
+        currentPosition.value  = {
+          lng: result.position.lng, 
+          lat: result.position.lat, 
+          address: result.formattedAddress  
+        };
+        map.value.setCenter([result.position.lng,  result.position.lat]);  // 地图中心点定位 
+      } else {
+        console.error(' 定位失败:', result);
+        
+
+        if (status !== 'complete') {
+          AMap.plugin('AMap.CitySearch',  () => {
+            const citySearch = new AMap.CitySearch();
+              citySearch.getLocalCity((status,  result) => {
+                if (status === 'complete') {
+                  map.value.setCenter(result.cityinfo.center); 
+                }
+              });
+            });
+          }
+
+      }
+    });
+    
     // const marker = new AMap.Marker({
     //   position: [113.664206, 34.737714],
     //   icon: new AMap.Icon({
@@ -48,7 +85,7 @@ const initMap = ()=>{
 
 #mapContainer{
   width: 100%;
-  height: 950px;
+  height: 100vh;
   position: absolute;
   top: 0;
   left: 0;
