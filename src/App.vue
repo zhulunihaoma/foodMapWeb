@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { shallowRef, onMounted, ref } from 'vue';
+import { GetFoodMapList } from './config'
 const map = ref(null);
 const currentPosition = ref({});
 onMounted(() => {
@@ -17,7 +18,7 @@ const initMap = ()=>{
   AMapLoader.load({ 
     key: '1ab83a26a29e05812d5fb5e347fb279a',
     version: '2.0',  // 推荐 2.0 版本 
-    plugins: ['AMap.Scale', 'AMap.ToolBar','AMap.Geolocation'],
+    plugins: ['AMap.Scale', 'AMap.ToolBar','AMap.Geolocation','AMap.Marker'],
     Loca:{
       version:"2.0.0"
     }
@@ -73,11 +74,20 @@ const initMap = ()=>{
     // map.value.add(marker); 
 
     // 批量添加标记（需遍历坐标数组）
-    // const markers = devices.map(device  => 
-    // new AMap.Marker({ position: [device.lng, device.lat]  })
-    // );
-    // map.value.add(markers); 
-    // map.value.setFitView();  // 自适
+    const { foodMapList }  = GetFoodMapList();
+    const markers = foodMapList.map(food  => 
+    new AMap.Marker({
+        title:food.name,
+        position: food.position,
+        icon: new AMap.Icon({
+          size: new AMap.Size(25, 34), // 图标大小
+          image: food.iconUrl,
+          imageSize: new AMap.Size(25, 34) // 图标显示大小
+        })
+        })
+    );
+    map.value.add(markers); 
+    map.value.setFitView();  // 自适
   }).catch(e => console.error(e)); 
 }
 </script>
