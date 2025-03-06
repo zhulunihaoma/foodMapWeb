@@ -25,7 +25,7 @@ const initMap = ()=>{
   }).then((AMap) => {
     map.value  = new AMap.Map('mapContainer', {
       zoom: 11,
-      center: [113.664206, 34.737714],
+      center: [118.608045,32.055255],
       viewMode: '3D',
       resizeEnable: true // 自适应窗口 
     });
@@ -80,10 +80,12 @@ const initMap = ()=>{
         title:food.name,
         position: food.position,
         icon: new AMap.Icon({
-          size: new AMap.Size(25, 34), // 图标大小
+          size: new AMap.Size(50, 25 ), // 图标大小
           image: food.iconUrl,
-          imageSize: new AMap.Size(25, 34) // 图标显示大小
-        })
+          imageSize: new AMap.Size(20, 25), // 图标显示大小
+        }),
+        offset: new AMap.Pixel(-30,-15)
+        
         })
     );
     map.value.add(markers); 
