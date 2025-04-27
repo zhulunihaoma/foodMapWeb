@@ -74,6 +74,22 @@ const initMap = ()=>{
     setLabelMaker();
   }).catch(e => console.error(e)); 
 }
+
+let clusterIndexSet = {
+      //城市层级
+      city:{
+        minZoom:2,
+        maxZoom:10,
+      },
+      district:{
+        minZoom:10,
+        maxZoom:12,
+      },
+      building:{
+        minZoom:12,
+        maxZoom:22,
+      }
+     }
 const setLabelMaker = ()=>{
     map.value.plugin(["AMap.IndexCluster"], function() {
 					loadIndexCluster([]); // 初始加载聚合点
@@ -109,21 +125,7 @@ const setLabelMaker = ()=>{
       layer.add(markers);
       map.value.setFitView();  // 自适
 
-     let clusterIndexSet = {
-      //城市层级
-      city:{
-        minZoom:2,
-        maxZoom:10,
-      },
-      district:{
-        minZoom:10,
-        maxZoom:12,
-      },
-      building:{
-        minZoom:12,
-        maxZoom:22,
-      }
-     }
+     
 }
 const _renderClusterMarker = (context:any)=>{
   let clusterCount = context.count;//聚合点内数量
