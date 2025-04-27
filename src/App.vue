@@ -8,6 +8,7 @@ import { onUnmounted, onMounted, ref } from 'vue';
 import { GetFoodMapList } from './config'
 const map = ref(null as any);
 const currentPosition = ref({});
+let indexCluster; //聚合点实例
 onMounted(() => {
   //注意在高德地图上注册的web服务端和web端是两个
   window._AMapSecurityConfig = {
@@ -74,6 +75,10 @@ const initMap = ()=>{
   }).catch(e => console.error(e)); 
 }
 const setLabelMaker = ()=>{
+    map.value.plugin(["AMap.IndexCluster"], function() {
+					loadIndexCluster([]); // 初始加载聚合点
+				});
+
   
       var markers = [];
       var allowCollision = false;
